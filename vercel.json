@@ -1,0 +1,9 @@
+{
+    "buildCommand": "npm run build",
+    "devCommand": "npm run dev",
+    "installCommand": "npm install",
+    "framework": "nextjs",
+    "env": {
+        "NVIDIA_API_KEY": "@nvidia-api-key"
+    }
+}
