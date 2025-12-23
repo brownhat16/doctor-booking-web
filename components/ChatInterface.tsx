@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import MessageBubble from "./MessageBubble";
 import DoctorCard from "./DoctorCard";
 import LabTestCard from "./LabTestCard";
+import LabSlotsDisplay from "./LabSlotsDisplay";
 import SlotsDisplay from "./SlotsDisplay";
 import ConsultationToggle from "./ConsultationToggle";
 import SpecialtiesGrid from "./SpecialtiesGrid";
@@ -18,6 +19,7 @@ interface Message {
     tests?: any[]; // For lab test results
     schedule?: any;
     type?: string;
+    labSlots?: any;
     id: string; // Added ID for reliable keys
 }
 
@@ -86,8 +88,9 @@ export default function ChatInterface() {
                 content:
                     data.message || "I'm sorry, I encountered an error. Please try again.",
                 doctors: data.data?.doctors,
-                tests: data.data?.tests, // Lab test results
+                tests: data.data?.tests,
                 schedule: data.type === "slots" ? data.data : undefined,
+                labSlots: data.type === "lab_slots" ? data.data : undefined,
                 type: data.type,
             };
 
@@ -237,6 +240,18 @@ export default function ChatInterface() {
                                                 <SlotsDisplay
                                                     data={msg.schedule}
                                                     onBookSlot={handleBookSlot}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Lab Test Slots for Booking */}
+                                        {msg.type === "lab_slots" && msg.labSlots && (
+                                            <div className="mt-4 max-w-xl">
+                                                <LabSlotsDisplay
+                                                    data={msg.labSlots}
+                                                    onBookSlot={(date, time, collectionType) => {
+                                                        processMessage(`book lab tests on ${date} at ${time} with ${collectionType}`);
+                                                    }}
                                                 />
                                             </div>
                                         )}
