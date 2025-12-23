@@ -211,48 +211,26 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                 </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex gap-3">
+            {/* Action Button */}
+            <div>
                 {labCount === 0 ? (
                     <button
                         disabled
-                        className="flex-1 px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
+                        className="w-full px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
                     >
                         No Labs Available
                     </button>
-                ) : !showLabs ? (
-                    <button
-                        onClick={() => {
-                            console.log('Select Lab button clicked');
-                            setShowLabs(true);
-                        }}
-                        className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
-                    >
-                        Select Lab
-                        <ChevronRight className="w-4 h-4" />
-                    </button>
                 ) : (
-                    <>
-                        <button
-                            onClick={() => {
-                                setShowLabs(false);
-                                setSelectedLab(null);
-                            }}
-                            className="px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleAddToCart}
-                            disabled={!selectedLab}
-                            className={`flex-1 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 ${selectedLab
+                    <button
+                        onClick={handleAddToCart}
+                        disabled={!selectedLab}
+                        className={`w-full px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 ${selectedLab
                                 ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
                                 : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
-                                }`}
-                        >
-                            {selectedLab ? `Add from ${selectedLab.lab_name}` : 'Select a lab first'}
-                        </button>
-                    </>
+                            }`}
+                    >
+                        {selectedLab ? `Add ${test.name} from ${selectedLab.lab_name}` : 'Select a lab to add to cart'}
+                    </button>
                 )}
             </div>
         </motion.div>
