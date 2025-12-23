@@ -37,16 +37,29 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
     const [selectedLab, setSelectedLab] = useState<LabOffering | null>(null);
     const [showLabs, setShowLabs] = useState(false);
 
+    // Safety check: ensure labs_offering exists and is an array
+    const labsOffering = Array.isArray(test.labs_offering) ? test.labs_offering : [];
+
     // Sort labs by price (cheapest first)
-    const sortedLabs = [...test.labs_offering].sort((a, b) => a.price - b.price);
+    const sortedLabs = labsOffering.length > 0
+        ? [...labsOffering].sort((a, b) => a.price - b.price)
+        : [];
     const cheapestPrice = sortedLabs[0]?.price || 0;
-    const labCount = test.labs_offering.length;
+    const labCount = labsOffering.length;
 
     const handleAddToCart = () => {
+        console.log(' Add to cart clicked!', { selectedLab, test: test.id });
         if (selectedLab && onAddToCart) {
             onAddToCart(test.id, selectedLab.lab_id);
+        } else {
+            console.warn('Cannot add to cart:', { selectedLab, onAddToCart });
         }
     };
+
+    // If no labs available, show error state
+    if (labCount === 0) {
+        console.warn('No labs_offering for test:', test.name);
+    }
 
     return (
         <motion.div
@@ -89,22 +102,30 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
             </div>
 
             {/* Price and Lab Info */}
-            <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl border border-green-200 dark:border-green-800">
-                <div className="flex items-baseline justify-between">
-                    <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Starts at</p>
-                        <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                            ₹{cheapestPrice}
-                        </p>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Available at</p>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {labCount} labs
-                        </p>
+            {labCount > 0 ? (
+                <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                    <div className="flex items-baseline justify-between">
+                        <div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Starts at</p>
+                            <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                                ₹{cheapestPrice}
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-xs text-gray-600 dark:text-gray-400">Available at</p>
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                {labCount} labs
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+                    <p className="text-sm text-amber-800 dark:text-amber-200">
+                        ⚠️ No lab pricing available for this test yet.
+                    </p>
+                </div>
+            )}
 
             {/* Lab Selector - Horizontal Scroll */}
             {showLabs && (
@@ -118,8 +139,8 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                                 key={lab.lab_id}
                                 onClick={() => setSelectedLab(lab)}
                                 className={`flex-shrink-0 w-64 p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedLab?.lab_id === lab.lab_id
-                                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-lg scale-105'
-                                        : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 hover:shadow-md'
+                                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-lg scale-105'
+                                    : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 hover:shadow-md'
                                     } ${idx === 0 ? 'bg-green-50/50 dark:bg-green-900/10' : ''}`}
                             >
                                 <div className="flex items-center justify-between mb-2">
@@ -199,8 +220,8 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                             onClick={handleAddToCart}
                             disabled={!selectedLab}
                             className={`flex-1 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 ${selectedLab
-                                    ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                                ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
                                 }`}
                         >
                             {selectedLab ? `Add from ${selectedLab.lab_name}` : 'Select a lab first'}
