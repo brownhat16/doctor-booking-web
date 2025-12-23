@@ -159,7 +159,7 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                                         }`}
                                 >
                                     {/* Lab Card */}
-                                    <div className="flex items-start justify-between mb-3">
+                                    <div className="flex items-start justify-between mb-2">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className="font-bold text-base text-gray-900 dark:text-white">
@@ -174,6 +174,9 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                                             <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                                                 <MapPin className="w-3 h-3" />
                                                 <span>{lab.lab_location}</span>
+                                                <span className="text-gray-300">|</span>
+                                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                                <span className="font-medium">{lab.lab_rating}</span>
                                             </div>
                                         </div>
                                         <div className="text-right">
@@ -183,25 +186,34 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="flex items-center gap-1 text-xs">
-                                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                            <span className="font-semibold text-gray-900 dark:text-white">{lab.lab_rating}</span>
-                                            <span className="text-gray-500">rating</span>
+                                    {/* TAT and Home Collection - Prominent */}
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                                            <Clock className="w-3.5 h-3.5 text-blue-600" />
+                                            <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">
+                                                {lab.turnaround_time}
+                                            </span>
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                                            <Clock className="w-3 h-3" />
-                                            <span>{lab.turnaround_time}</span>
-                                        </div>
-                                        {lab.home_collection_available && (
-                                            <div className="flex items-center gap-1 text-xs text-orange-600">
-                                                <Home className="w-3 h-3" />
-                                                <span>Home: +₹{lab.home_collection_fee}</span>
+                                        {lab.home_collection_available ? (
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-700">
+                                                <Home className="w-3.5 h-3.5 text-green-600" />
+                                                <span className="text-xs font-semibold text-green-700 dark:text-green-300">
+                                                    Home Sample +₹{lab.home_collection_fee}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                                <Home className="w-3.5 h-3.5 text-gray-400" />
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                    Visit Only
+                                                </span>
                                             </div>
                                         )}
-                                        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                                            <Award className="w-3 h-3" />
-                                            <span className="truncate">{lab.accreditation}</span>
+                                        <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-700">
+                                            <Award className="w-3.5 h-3.5 text-purple-600" />
+                                            <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">
+                                                {lab.accreditation}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -225,8 +237,8 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                         onClick={handleAddToCart}
                         disabled={!selectedLab}
                         className={`w-full px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 ${selectedLab
-                                ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                            ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
                             }`}
                     >
                         {selectedLab ? `Add ${test.name} from ${selectedLab.lab_name}` : 'Select a lab to add to cart'}
