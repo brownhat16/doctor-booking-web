@@ -4,7 +4,9 @@ import { useState, useRef, useEffect } from "react";
 import MessageBubble from "./MessageBubble";
 import DoctorCard from "./DoctorCard";
 import SlotsDisplay from "./SlotsDisplay";
-import { Send, Sparkles, Stethoscope, Menu, X, Bot } from "lucide-react";
+import ConsultationToggle from "./ConsultationToggle";
+import SpecialtiesGrid from "./SpecialtiesGrid";
+import { Send, Sparkles, Stethoscope, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +30,7 @@ export default function ChatInterface() {
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [consultationMode, setConsultationMode] = useState<"video" | "clinic">("clinic");
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -115,6 +118,11 @@ export default function ChatInterface() {
         }
     };
 
+    const handleSpecialtySelect = (specialty: string) => {
+        const query = `I am looking for a ${specialty} for ${consultationMode === 'video' ? 'video consultation' : 'in-clinic consultation'}.`;
+        processMessage(query);
+    };
+
     return (
         <div className="flex h-[80vh] w-full max-w-6xl mx-auto overflow-hidden bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 ring-1 ring-black/5">
             {/* Sidebar - Desktop */}
@@ -146,6 +154,24 @@ export default function ChatInterface() {
             {/* Chat Area */}
             <div className="flex-1 flex flex-col relative bg-white/50">
                 <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+
+                    {/* Dashboard Mode (Only show when just default message exists) */}
+                    {messages.length === 1 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-8"
+                        >
+                            <div className="text-center mb-8 mt-4">
+                                <h1 className="text-3xl font-bold text-gray-800 mb-2">How can we help you today?</h1>
+                                <p className="text-gray-500">Select a specialty or describe your symptoms below</p>
+                            </div>
+
+                            <ConsultationToggle mode={consultationMode} onModeChange={setConsultationMode} />
+                            <SpecialtiesGrid onSelect={handleSpecialtySelect} />
+                        </motion.div>
+                    )}
+
                     <AnimatePresence initial={false}>
                         {messages.map((msg) => (
                             <motion.div
