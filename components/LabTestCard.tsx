@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TestTube, Home, Clock, Star, Beaker, MapPin, Award } from "lucide-react";
+import { TestTube, Home, Clock, Star, Beaker, MapPin, Award, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 interface LabOffering {
@@ -30,16 +30,23 @@ interface LabTestCardProps {
         labs_offering: LabOffering[];
     };
     index: number;
+    onAddToCart?: (testId: string, labId: string) => void;
 }
 
-export default function LabTestCard({ test, index }: LabTestCardProps) {
+export default function LabTestCard({ test, index, onAddToCart }: LabTestCardProps) {
     const [selectedLab, setSelectedLab] = useState<LabOffering | null>(null);
-    const [showAllLabs, setShowAllLabs] = useState(false);
+    const [showLabs, setShowLabs] = useState(false);
 
     // Sort labs by price (cheapest first)
     const sortedLabs = [...test.labs_offering].sort((a, b) => a.price - b.price);
-    const cheapestLab = sortedLabs[0];
-    const mostExpensiveLab = sortedLabs[sortedLabs.length - 1];
+    const cheapestPrice = sortedLabs[0]?.price || 0;
+    const labCount = test.labs_offering.length;
+
+    const handleAddToCart = () => {
+        if (selectedLab && onAddToCart) {
+            onAddToCart(test.id, selectedLab.lab_id);
+        }
+    };
 
     return (
         <motion.div
@@ -81,106 +88,126 @@ export default function LabTestCard({ test, index }: LabTestCardProps) {
                 )}
             </div>
 
-            {/* Lab Offerings */}
-            <div className="mb-4">
-                <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
-                        Available at {test.labs_offering.length} labs
-                    </h4>
-                    <span className="text-xs text-gray-500">
-                        ₹{cheapestLab.price} - ₹{mostExpensiveLab.price}
-                    </span>
+            {/* Price and Lab Info */}
+            <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                <div className="flex items-baseline justify-between">
+                    <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Starts at</p>
+                        <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                            ₹{cheapestPrice}
+                        </p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-xs text-gray-600 dark:text-gray-400">Available at</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {labCount} labs
+                        </p>
+                    </div>
                 </div>
-
-                {/* Show first lab by default, all on expand */}
-                <div className="space-y-2">
-                    {(showAllLabs ? sortedLabs : [sortedLabs[0]]).map((lab, idx) => (
-                        <div
-                            key={lab.lab_id}
-                            className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${selectedLab?.lab_id === lab.lab_id
-                                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
-                                    : 'border-gray-200 dark:border-gray-700 hover:border-purple-300'
-                                } ${idx === 0 ? 'bg-green-50/50 dark:bg-green-900/10' : ''}`}
-                            onClick={() => setSelectedLab(lab)}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-semibold text-sm text-gray-900 dark:text-white">
-                                        {lab.lab_name}
-                                    </span>
-                                    {idx === 0 && (
-                                        <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
-                                            Cheapest
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                    <span className="text-xs font-semibold">{lab.lab_rating}</span>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className="flex items-center gap-1">
-                                    <MapPin className="w-3 h-3 text-gray-500" />
-                                    <span className="text-gray-600 dark:text-gray-400">{lab.lab_location}</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <Clock className="w-3 h-3 text-gray-500" />
-                                    <span className="text-gray-600 dark:text-gray-400">{lab.turnaround_time}</span>
-                                </div>
-                                {lab.home_collection_available && (
-                                    <div className="flex items-center gap-1">
-                                        <Home className="w-3 h-3 text-orange-500" />
-                                        <span className="text-gray-600 dark:text-gray-400">
-                                            +₹{lab.home_collection_fee}
-                                        </span>
-                                    </div>
-                                )}
-                                <div className="flex items-center gap-1">
-                                    <Award className="w-3 h-3 text-blue-500" />
-                                    <span className="text-gray-600 dark:text-gray-400">{lab.accreditation}</span>
-                                </div>
-                            </div>
-
-                            <div className="mt-2 text-right">
-                                <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                    ₹{lab.price}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {test.labs_offering.length > 1 && !showAllLabs && (
-                    <button
-                        onClick={() => setShowAllLabs(true)}
-                        className="mt-2 w-full text-xs text-purple-600 dark:text-purple-400 hover:underline"
-                    >
-                        + Show {test.labs_offering.length - 1} more lab{test.labs_offering.length > 2 ? 's' : ''}
-                    </button>
-                )}
-
-                {showAllLabs && (
-                    <button
-                        onClick={() => setShowAllLabs(false)}
-                        className="mt-2 w-full text-xs text-gray-600 dark:text-gray-400 hover:underline"
-                    >
-                        Show less
-                    </button>
-                )}
             </div>
 
-            {/* Action Button */}
-            <button
-                className={`w-full px-6 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 ${selectedLab
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                    }`}
-                disabled={!selectedLab}
-            >
-                {selectedLab ? `Add from ${selectedLab.lab_name}` : 'Select a lab to add'}
-            </button>
+            {/* Lab Selector - Horizontal Scroll */}
+            {showLabs && (
+                <div className="mb-4">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                        Choose your preferred lab:
+                    </p>
+                    <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                        {sortedLabs.map((lab, idx) => (
+                            <div
+                                key={lab.lab_id}
+                                onClick={() => setSelectedLab(lab)}
+                                className={`flex-shrink-0 w-64 p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedLab?.lab_id === lab.lab_id
+                                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-lg scale-105'
+                                        : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 hover:shadow-md'
+                                    } ${idx === 0 ? 'bg-green-50/50 dark:bg-green-900/10' : ''}`}
+                            >
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-bold text-sm text-gray-900 dark:text-white">
+                                            {lab.lab_name}
+                                        </span>
+                                        {idx === 0 && (
+                                            <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
+                                                Best Price
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5 mb-3">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-1">
+                                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                            <span className="font-semibold">{lab.lab_rating}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                                            <MapPin className="w-3 h-3" />
+                                            <span>{lab.lab_location}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                                            <Clock className="w-3 h-3" />
+                                            <span>{lab.turnaround_time}</span>
+                                        </div>
+                                        {lab.home_collection_available && (
+                                            <div className="flex items-center gap-1 text-orange-600">
+                                                <Home className="w-3 h-3" />
+                                                <span>+₹{lab.home_collection_fee}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        {lab.accreditation}
+                                    </span>
+                                    <span className="text-xl font-bold text-purple-600">
+                                        ₹{lab.price}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+                {!showLabs ? (
+                    <button
+                        onClick={() => setShowLabs(true)}
+                        className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+                    >
+                        Select Lab
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
+                ) : (
+                    <>
+                        <button
+                            onClick={() => {
+                                setShowLabs(false);
+                                setSelectedLab(null);
+                            }}
+                            className="px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={!selectedLab}
+                            className={`flex-1 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 ${selectedLab
+                                    ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                                }`}
+                        >
+                            {selectedLab ? `Add from ${selectedLab.lab_name}` : 'Select a lab first'}
+                        </button>
+                    </>
+                )}
+            </div>
         </motion.div>
     );
 }
