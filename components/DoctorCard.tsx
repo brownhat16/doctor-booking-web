@@ -1,5 +1,5 @@
 ```typescript
-import { MapPin, Star, Clock, IndianRupee, BadgeCheck, ExternalLink, Calendar } from "lucide-react";
+import { MapPin, Star, Clock, IndianRupee, Calendar } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -22,72 +22,65 @@ export default function DoctorCard({ doctor, onAction }: DoctorCardProps) {
   const handleAction = async (action: "slots" | "book") => {
     if (loadingAction || !onAction) return;
     setLoadingAction(action);
-    
-    // Trigger parent action
     onAction(action, doctor.name);
-    
-    // Reset loading state after a delay (or rely on parent to remount, but safe to reset)
     setTimeout(() => setLoadingAction(null), 2000);
   };
 
   return (
-    <div className="group bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all duration-300 relative overflow-hidden">
-      {/* Top Banner accent */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-400" />
-      
-      <div className="flex justify-between items-start mb-3">
+    <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300">
+      <div className="flex justify-between items-start mb-1">
         <div>
-          <h3 className="flex items-center gap-1.5 font-bold text-gray-800 text-lg group-hover:text-blue-600 transition-colors">
+          <h3 className="font-bold text-gray-900 text-lg">
             {doctor.name}
-            <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-50" />
           </h3>
-          <p className="text-sm font-medium text-blue-600/80 uppercase tracking-wide text-[10px] mt-0.5">
+          <p className="text-sm text-gray-500 font-medium">
             {doctor.specialty}
           </p>
         </div>
-        <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
-          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-          <span className="text-xs font-bold text-amber-700">{doctor.rating}</span>
+        <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-lg border border-green-100">
+          <Star className="w-3.5 h-3.5 text-green-600 fill-green-600" />
+          <span className="text-xs font-bold text-green-700">{doctor.rating}</span>
         </div>
       </div>
 
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2 text-gray-600">
-            <div className="p-1.5 bg-gray-50 rounded-md">
-                <MapPin className="w-3.5 h-3.5 text-gray-400" />
-            </div>
-            <span className="font-medium">{doctor.distance}</span>
-          </div>
-          <div className="flex items-center gap-1 font-semibold text-gray-900">
-            <IndianRupee className="w-3.5 h-3.5 text-gray-400" />
-            {doctor.fees}
-          </div>
+      <div className="flex flex-col gap-2 mt-3 mb-5">
+        <div className="flex items-center gap-3 text-sm">
+           <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <IndianRupee className="w-3.5 h-3.5 text-blue-600" />
+           </div>
+           <span className="text-gray-600 font-medium">₹{doctor.fees} <span className="text-gray-400 font-normal">consultation</span></span>
+        </div>
+        
+        <div className="flex items-center gap-3 text-sm">
+           <div className="w-6 h-6 rounded-full bg-purple-50 flex items-center justify-center flex-shrink-0">
+              <MapPin className="w-3.5 h-3.5 text-purple-600" />
+           </div>
+           <span className="text-gray-600 font-medium">{doctor.distance}</span>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-medium text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-100">
-           <Clock className="w-3.5 h-3.5" />
-           Available {doctor.next_available}
+        <div className="flex items-center gap-3 text-sm">
+           <div className="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
+              <Clock className="w-3.5 h-3.5 text-emerald-600" />
+           </div>
+           <span className="text-gray-600 font-medium">Available {doctor.next_available}</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => handleAction("slots")}
           disabled={!!loadingAction}
           className={cn(
-            "flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold rounded-lg transition-all active:scale-95",
-            loadingAction === "slots" 
-                ? "bg-blue-50 text-blue-400 cursor-wait"
-                : "bg-white text-gray-700 border border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50"
-            )}
+            "flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-xl transition-all active:scale-95 border",
+            "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100 hover:border-blue-200"
+          )}
         >
           {loadingAction === "slots" ? (
-             <span className="w-4 h-4 border-2 border-blue-400/30 border-t-blue-500 rounded-full animate-spin" />
+             <span className="w-4 h-4 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
           ) : (
             <>
-              <Calendar className="w-3.5 h-3.5" />
-              Availability
+              <Calendar className="w-4 h-4" />
+              View Slots
             </>
           )}
         </button>
@@ -96,18 +89,16 @@ export default function DoctorCard({ doctor, onAction }: DoctorCardProps) {
           onClick={() => handleAction("book")}
           disabled={!!loadingAction}
           className={cn(
-            "flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-white rounded-lg transition-all shadow-md shadow-blue-500/20 active:scale-95",
-            loadingAction === "book"
-                ? "bg-blue-700 cursor-wait"
-                : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+            "flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold text-white rounded-xl transition-all shadow-md active:scale-95",
+            "bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90"
           )}
         >
           {loadingAction === "book" ? (
             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
+               <Calendar className="w-4 h-4" />
                Book Now
-               <ExternalLink className="w-3 h-3" />
             </>
           )}
         </button>

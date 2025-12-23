@@ -168,13 +168,14 @@ export default function ChatInterface() {
                                         <MessageBubble message={msg} />
 
                                         {msg.doctors && msg.doctors.length > 0 && (
-                                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                {msg.doctors.slice(0, 4).map((doctor: any, dIdx: number) => (
-                                                    <DoctorCard
-                                                        key={dIdx}
-                                                        doctor={doctor}
-                                                        onAction={handleCardAction}
-                                                    />
+                                            <div className="mt-6 flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent -mx-4 px-4 md:-mx-2 md:px-2">
+                                                {msg.doctors.map((doctor: any, dIdx: number) => (
+                                                    <div key={dIdx} className="min-w-[280px] max-w-[280px] flex-shrink-0">
+                                                        <DoctorCard
+                                                            doctor={doctor}
+                                                            onAction={handleCardAction}
+                                                        />
+                                                    </div>
                                                 ))}
                                             </div>
                                         )}
