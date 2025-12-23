@@ -42,6 +42,7 @@ export default function ChatInterface() {
     }, [messages, isLoading]);
 
     const handleBookSlot = (date: string, slotId: string) => {
+        // Include consultation mode in booking message for backend detection
         const modeText = consultationMode === "video" ? "video consultation" : "in-clinic visit";
         const bookingMessage = `Book appointment on ${date} for slot ${slotId} for ${modeText}`;
         setInput(bookingMessage);
