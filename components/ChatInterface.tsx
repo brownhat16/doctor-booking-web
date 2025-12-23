@@ -179,7 +179,7 @@ export default function ChatInterface() {
                             </div>
 
                             <ConsultationToggle mode={consultationMode} onModeChange={setConsultationMode} />
-                            <SpecialtiesGrid onSelect={handleSpecialtySelect} />
+                            <SpecialtiesGrid onSelect={handleSpecialtiesSelect} />
                         </motion.div>
                     )}
 
