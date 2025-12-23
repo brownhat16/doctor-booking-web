@@ -123,7 +123,13 @@ export default function ChatInterface() {
         }
     };
 
-    const handleSpecialtySelect = (specialty: string) => {
+    const handleAddLabToCart = async (testId: string, labId: string) => {
+        // Send add to cart request
+        const message = `add ${testId} from lab ${labId} to cart`;
+        await processMessage(message);
+    };
+
+    const handleSpecialtiesSelect = (specialty: string) => {
         const query = `I am looking for a ${specialty} for ${consultationMode === 'video' ? 'video consultation' : 'in-clinic consultation'}.`;
         processMessage(query);
     };
@@ -219,6 +225,7 @@ export default function ChatInterface() {
                                                         <LabTestCard
                                                             test={test}
                                                             index={tIdx}
+                                                            onAddToCart={handleAddLabToCart}
                                                         />
                                                     </div>
                                                 ))}
