@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
             {
                 type: "chat",
-                message: "Sorry, I'm having trouble connecting to the backend. Please try again in a moment.",
+                message: "Sorry, I am having trouble connecting to the backend. Please try again in a moment.",
             },
             { status: 200 } // Return 200 so frontend doesn't break
         );
