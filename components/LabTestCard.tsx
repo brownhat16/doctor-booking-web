@@ -197,9 +197,19 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-                {!showLabs ? (
+                {labCount === 0 ? (
                     <button
-                        onClick={() => setShowLabs(true)}
+                        disabled
+                        className="flex-1 px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
+                    >
+                        No Labs Available
+                    </button>
+                ) : !showLabs ? (
+                    <button
+                        onClick={() => {
+                            console.log('Select Lab button clicked');
+                            setShowLabs(true);
+                        }}
                         className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
                     >
                         Select Lab
@@ -220,8 +230,8 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                             onClick={handleAddToCart}
                             disabled={!selectedLab}
                             className={`flex-1 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 ${selectedLab
-                                ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                                    ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
                                 }`}
                         >
                             {selectedLab ? `Add from ${selectedLab.lab_name}` : 'Select a lab first'}
