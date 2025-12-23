@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TestTube, Home, Clock, Star, Beaker, MapPin, Award, ChevronRight } from "lucide-react";
+import { TestTube, Home, Clock, Star, Beaker, MapPin, Award, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 interface LabOffering {
@@ -35,7 +35,7 @@ interface LabTestCardProps {
 
 export default function LabTestCard({ test, index, onAddToCart }: LabTestCardProps) {
     const [selectedLab, setSelectedLab] = useState<LabOffering | null>(null);
-    const [showLabs, setShowLabs] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     // Safety check: ensure labs_offering exists and is an array
     const labsOffering = Array.isArray(test.labs_offering) ? test.labs_offering : [];
@@ -48,11 +48,12 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
     const labCount = labsOffering.length;
 
     const handleAddToCart = () => {
-        console.log(' Add to cart clicked!', { selectedLab, test: test.id });
+        console.log('🛒 Add to cart clicked!', { selectedLab, test: test.id });
         if (selectedLab && onAddToCart) {
             onAddToCart(test.id, selectedLab.lab_id);
+            setShowDropdown(false);
         } else {
-            console.warn('Cannot add to cart:', { selectedLab, onAddToCart });
+            console.warn('⚠️ Cannot add to cart:', { selectedLab, onAddToCart });
         }
     };
 
@@ -127,71 +128,86 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                 </div>
             )}
 
-            {/* Lab Selector - Horizontal Scroll */}
-            {showLabs && (
-                <div className="mb-4">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                        Choose your preferred lab:
-                    </p>
-                    <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                        {sortedLabs.map((lab, idx) => (
-                            <div
-                                key={lab.lab_id}
-                                onClick={() => setSelectedLab(lab)}
-                                className={`flex-shrink-0 w-64 p-4 rounded-xl border-2 cursor-pointer transition-all ${selectedLab?.lab_id === lab.lab_id
-                                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-lg scale-105'
-                                    : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 hover:shadow-md'
-                                    } ${idx === 0 ? 'bg-green-50/50 dark:bg-green-900/10' : ''}`}
-                            >
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-bold text-sm text-gray-900 dark:text-white">
-                                            {lab.lab_name}
-                                        </span>
-                                        {idx === 0 && (
-                                            <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
-                                                Best Price
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
+            {/* Lab Selection Dropdown */}
+            {labCount > 0 && (
+                <div className="mb-4 relative">
+                    <button
+                        onClick={() => {
+                            console.log('🔽 Dropdown toggled');
+                            setShowDropdown(!showDropdown);
+                        }}
+                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-xl flex items-center justify-between hover:border-purple-500 transition-colors"
+                    >
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            {selectedLab ? `${selectedLab.lab_name} - ₹${selectedLab.price}` : 'Select a lab'}
+                        </span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+                    </button>
 
-                                <div className="space-y-1.5 mb-3">
-                                    <div className="flex items-center justify-between text-xs">
-                                        <div className="flex items-center gap-1">
-                                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                            <span className="font-semibold">{lab.lab_rating}</span>
+                    {/* Dropdown Menu */}
+                    {showDropdown && (
+                        <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border-2 border-purple-300 dark:border-purple-600 rounded-xl shadow-2xl max-h-96 overflow-y-auto">
+                            {sortedLabs.map((lab, idx) => (
+                                <div
+                                    key={lab.lab_id}
+                                    onClick={() => {
+                                        console.log('🏥 Lab selected:', lab.lab_name);
+                                        setSelectedLab(lab);
+                                        setShowDropdown(false);
+                                    }}
+                                    className={`p-4 cursor-pointer border-b border-gray-200 dark:border-gray-700 last:border-b-0 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors ${selectedLab?.lab_id === lab.lab_id ? 'bg-purple-100 dark:bg-purple-900/30' : ''
+                                        }`}
+                                >
+                                    {/* Lab Card */}
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="font-bold text-base text-gray-900 dark:text-white">
+                                                    {lab.lab_name}
+                                                </span>
+                                                {idx === 0 && (
+                                                    <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
+                                                        Best Price
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                                <MapPin className="w-3 h-3" />
+                                                <span>{lab.lab_location}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                                            <MapPin className="w-3 h-3" />
-                                            <span>{lab.lab_location}</span>
+                                        <div className="text-right">
+                                            <p className="text-2xl font-bold text-purple-600">
+                                                ₹{lab.price}
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between text-xs">
-                                        <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
+
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="flex items-center gap-1 text-xs">
+                                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                            <span className="font-semibold text-gray-900 dark:text-white">{lab.lab_rating}</span>
+                                            <span className="text-gray-500">rating</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
                                             <Clock className="w-3 h-3" />
                                             <span>{lab.turnaround_time}</span>
                                         </div>
                                         {lab.home_collection_available && (
-                                            <div className="flex items-center gap-1 text-orange-600">
+                                            <div className="flex items-center gap-1 text-xs text-orange-600">
                                                 <Home className="w-3 h-3" />
-                                                <span>+₹{lab.home_collection_fee}</span>
+                                                <span>Home: +₹{lab.home_collection_fee}</span>
                                             </div>
                                         )}
+                                        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                                            <Award className="w-3 h-3" />
+                                            <span className="truncate">{lab.accreditation}</span>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                        {lab.accreditation}
-                                    </span>
-                                    <span className="text-xl font-bold text-purple-600">
-                                        ₹{lab.price}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -230,8 +246,8 @@ export default function LabTestCard({ test, index, onAddToCart }: LabTestCardPro
                             onClick={handleAddToCart}
                             disabled={!selectedLab}
                             className={`flex-1 px-6 py-3 rounded-xl font-semibold shadow-lg transition-all duration-200 ${selectedLab
-                                    ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
-                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                                ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white hover:shadow-xl hover:scale-105'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
                                 }`}
                         >
                             {selectedLab ? `Add from ${selectedLab.lab_name}` : 'Select a lab first'}
