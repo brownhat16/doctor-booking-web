@@ -40,13 +40,11 @@ export default function ChatInterface() {
         // For a smoother UX, we can just populate the input.
     };
 
-    const sendMessage = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!input.trim() || isLoading) return;
+    const processMessage = async (messageText: string) => {
+        if (!messageText.trim() || isLoading) return;
 
-        const userMessage: Message = { role: "user", content: input };
+        const userMessage: Message = { role: "user", content: messageText };
         setMessages((prev) => [...prev, userMessage]);
-        setInput("");
         setIsLoading(true);
 
         try {
@@ -54,7 +52,7 @@ export default function ChatInterface() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    message: input,
+                    message: messageText,
                     history: messages.map((m) => ({
                         role: m.role,
                         content: m.content,
@@ -91,6 +89,21 @@ export default function ChatInterface() {
         }
     };
 
+    const sendMessage = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await processMessage(input);
+        setInput("");
+    };
+
+    const handleCardAction = (action: 'slots' | 'book', doctorName: string) => {
+        if (action === 'slots') {
+            processMessage(`What are the slots for ${doctorName}?`);
+        } else if (action === 'book') {
+            // For now, asking for slots is safer than auto-booking first slot
+            processMessage(`I want to book an appointment with ${doctorName}. Show me available slots.`);
+        }
+    };
+
     return (
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
             {/* Chat Messages */}
@@ -103,7 +116,11 @@ export default function ChatInterface() {
                         {msg.doctors && msg.doctors.length > 0 && (
                             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {msg.doctors.slice(0, 3).map((doctor, dIdx) => (
-                                    <DoctorCard key={dIdx} doctor={doctor} />
+                                    <DoctorCard
+                                        key={dIdx}
+                                        doctor={doctor}
+                                        onAction={handleCardAction}
+                                    />
                                 ))}
                             </div>
                         )}

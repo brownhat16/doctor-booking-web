@@ -8,9 +8,10 @@ interface DoctorCardProps {
         distance: string;
         next_available: string;
     };
+    onAction?: (action: 'slots' | 'book', doctorName: string) => void;
 }
 
-export default function DoctorCard({ doctor }: DoctorCardProps) {
+export default function DoctorCard({ doctor, onAction }: DoctorCardProps) {
     return (
         <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
             <div className="flex items-start justify-between mb-2">
@@ -40,10 +41,16 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
             </div>
 
             <div className="flex gap-2">
-                <button className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors">
+                <button
+                    onClick={() => onAction?.('slots', doctor.name)}
+                    className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
+                >
                     View Slots
                 </button>
-                <button className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                <button
+                    onClick={() => onAction?.('book', doctor.name)}
+                    className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                >
                     Book Now
                 </button>
             </div>
