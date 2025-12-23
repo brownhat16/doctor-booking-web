@@ -25,7 +25,7 @@ export default function ChatInterface() {
             id: "init",
             role: "assistant",
             content:
-                "Hello! I'm your AI health assistant. I can help you find top-rated doctors, check real-time availability, and book appointments instantly. How can I help you today?",
+                "Hello! I'm your AI health assistant. 👋\n\nBefore we begin, would you prefer a Video Consultation 📹 or an In-Clinic Visit 🏥?\n\nYou can select your preference using the toggle above, then choose a specialty to get started!",
         },
     ]);
     const [input, setInput] = useState("");
