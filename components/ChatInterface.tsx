@@ -3,11 +3,13 @@
 import { useState, useRef, useEffect } from "react";
 import MessageBubble from "./MessageBubble";
 import DoctorCard from "./DoctorCard";
+import SlotsDisplay from "./SlotsDisplay";
 
 interface Message {
     role: "user" | "assistant";
     content: string;
     doctors?: any[];
+    schedule?: any; // Added schedule field
     type?: string;
 }
 
@@ -29,6 +31,14 @@ export default function ChatInterface() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    const handleBookSlot = (date: string, slotId: string) => {
+        // Automatically send a booking message when a slot is clicked
+        const bookingMessage = `Book appointment on ${date} for slot ${slotId}`;
+        setInput(bookingMessage);
+        // We could auto-submit here, but letting the user see/edit is often safer.
+        // For a smoother UX, we can just populate the input.
+    };
 
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,6 +72,7 @@ export default function ChatInterface() {
                 role: "assistant",
                 content: data.message || "I'm sorry, I encountered an error. Please try again.",
                 doctors: data.data?.doctors,
+                schedule: data.type === "slots" ? data.data : undefined, // Capture schedule data
                 type: data.type,
             };
 
@@ -87,11 +98,23 @@ export default function ChatInterface() {
                 {messages.map((msg, idx) => (
                     <div key={idx}>
                         <MessageBubble message={msg} />
+
+                        {/* Render Doctor Cards */}
                         {msg.doctors && msg.doctors.length > 0 && (
                             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {msg.doctors.slice(0, 3).map((doctor, dIdx) => (
                                     <DoctorCard key={dIdx} doctor={doctor} />
                                 ))}
+                            </div>
+                        )}
+
+                        {/* Render Slots Display */}
+                        {msg.type === "slots" && msg.schedule && (
+                            <div className="max-w-md">
+                                <SlotsDisplay
+                                    data={msg.schedule}
+                                    onBookSlot={handleBookSlot}
+                                />
                             </div>
                         )}
                     </div>
