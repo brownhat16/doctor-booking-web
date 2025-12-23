@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import MessageBubble from "./MessageBubble";
 import DoctorCard from "./DoctorCard";
+import LabTestCard from "./LabTestCard";
 import SlotsDisplay from "./SlotsDisplay";
 import ConsultationToggle from "./ConsultationToggle";
 import SpecialtiesGrid from "./SpecialtiesGrid";
@@ -14,6 +15,7 @@ interface Message {
     role: "user" | "assistant";
     content: string;
     doctors?: any[];
+    tests?: any[]; // For lab test results
     schedule?: any;
     type?: string;
     id: string; // Added ID for reliable keys
@@ -25,7 +27,7 @@ export default function ChatInterface() {
             id: "init",
             role: "assistant",
             content:
-                "Hello! I'm your AI health assistant. 👋\n\nBefore we begin, would you prefer a Video Consultation 📹 or an In-Clinic Visit 🏥?\n\nYou can select your preference using the toggle above, then choose a specialty to get started!",
+                "Hello! Welcome to your AI Health Assistant. 👋\n\n**What would you like to do today?**\n\n🩺 **Book Doctor Appointment** - Find and book with specialists\n🧪 **Book Lab Tests** - Order blood tests, scans, and diagnostics\n\nYou can also simply type your need, and I'll help you out!",
         },
     ]);
     const [input, setInput] = useState("");
@@ -84,6 +86,7 @@ export default function ChatInterface() {
                 content:
                     data.message || "I'm sorry, I encountered an error. Please try again.",
                 doctors: data.data?.doctors,
+                tests: data.data?.tests, // Lab test results
                 schedule: data.type === "slots" ? data.data : undefined,
                 type: data.type,
             };
@@ -202,6 +205,20 @@ export default function ChatInterface() {
                                                         <DoctorCard
                                                             doctor={doctor}
                                                             onAction={handleCardAction}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Lab Test Cards */}
+                                        {msg.tests && msg.tests.length > 0 && (
+                                            <div className="mt-6 flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent -mx-4 px-4 md:-mx-2 md:px-2">
+                                                {msg.tests.map((test: any, tIdx: number) => (
+                                                    <div key={tIdx} className="min-w-[320px] max-w-[320px] flex-shrink-0">
+                                                        <LabTestCard
+                                                            test={test}
+                                                            index={tIdx}
                                                         />
                                                     </div>
                                                 ))}
