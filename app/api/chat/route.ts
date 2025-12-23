@@ -1,4 +1,3 @@
-```typescript
 import { NextRequest, NextResponse } from "next/server";
 
 const BACKEND_URL = "https://doctor-booking-backend-28a3.onrender.com";
@@ -17,7 +16,7 @@ export async function POST(request: NextRequest) {
         const body: ChatRequest = await request.json();
 
         // Call Python backend on Render
-        const response = await fetch(`${ BACKEND_URL } /api/chat`, {
+        const response = await fetch(`${BACKEND_URL}/api/chat`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -26,8 +25,8 @@ export async function POST(request: NextRequest) {
         });
 
         if (!response.ok) {
-            console.error(`Backend error: ${ response.status } ${ response.statusText } `);
-            throw new Error(`Backend returned ${ response.status } `);
+            console.error(`Backend error: ${response.status} ${response.statusText}`);
+            throw new Error(`Backend returned ${response.status}`);
         }
 
         const data = await response.json();
@@ -46,4 +45,3 @@ export async function POST(request: NextRequest) {
         );
     }
 }
-```
