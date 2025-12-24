@@ -9,6 +9,7 @@ interface ChatRequest {
         lat: number;
         lng: number;
     };
+    session_id?: string;
 }
 
 export async function POST(request: NextRequest) {

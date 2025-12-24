@@ -52,6 +52,19 @@ export default function ChatInterface() {
         setInput(bookingMessage);
     };
 
+    // Generate stable session_id for cart persistence
+    const getSessionId = () => {
+        if (typeof window !== 'undefined') {
+            let sessionId = sessionStorage.getItem('lab_session_id');
+            if (!sessionId) {
+                sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('lab_session_id', sessionId);
+            }
+            return sessionId;
+        }
+        return 'default_session';
+    };
+
     const processMessage = async (messageText: string) => {
         if (!messageText.trim() || isLoading) return;
 
@@ -77,6 +90,7 @@ export default function ChatInterface() {
                         lat: 18.5204,
                         lng: 73.8567,
                     },
+                    session_id: getSessionId(),
                 }),
             });
 
