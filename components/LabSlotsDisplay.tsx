@@ -76,15 +76,13 @@ export default function LabSlotsDisplay({ data, onBookSlot }: LabSlotsDisplayPro
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Sample Collection</p>
                 <div className="flex gap-3">
                     <button onClick={() => setCollectionType("lab_visit")}
-                        className={`flex-1 px-4 py-3 rounded-xl border-2 flex items-center justify-center gap-2 ${
-                            collectionType === "lab_visit" ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700"
-                        }`}>
+                        className={`flex-1 px-4 py-3 rounded-xl border-2 flex items-center justify-center gap-2 ${collectionType === "lab_visit" ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700"
+                            }`}>
                         <Building2 className="w-4 h-4" /><span className="font-medium">Lab Visit</span>
                     </button>
                     <button onClick={() => setCollectionType("home_collection")}
-                        className={`flex-1 px-4 py-3 rounded-xl border-2 flex items-center justify-center gap-2 ${
-                            collectionType === "home_collection" ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-gray-200 dark:border-gray-700"
-                        }`}>
+                        className={`flex-1 px-4 py-3 rounded-xl border-2 flex items-center justify-center gap-2 ${collectionType === "home_collection" ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-gray-200 dark:border-gray-700"
+                            }`}>
                         <Home className="w-4 h-4" /><span className="font-medium">Home +₹50</span>
                     </button>
                 </div>
@@ -96,9 +94,8 @@ export default function LabSlotsDisplay({ data, onBookSlot }: LabSlotsDisplayPro
                 <div className="flex gap-2 overflow-x-auto pb-2">
                     {dates.map((date) => (
                         <button key={date} onClick={() => { setSelectedDate(date); setSelectedTime(null); }}
-                            className={`px-4 py-3 rounded-xl border-2 min-w-[90px] ${
-                                selectedDate === date ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700"
-                            }`}>
+                            className={`px-4 py-3 rounded-xl border-2 min-w-[90px] ${selectedDate === date ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700"
+                                }`}>
                             <p className={`text-sm font-bold ${selectedDate === date ? "text-purple-600" : "text-gray-900 dark:text-white"}`}>
                                 {formatDate(date)}
                             </p>
@@ -107,20 +104,24 @@ export default function LabSlotsDisplay({ data, onBookSlot }: LabSlotsDisplayPro
                 </div>
             </div>
 
-            {/* Time Slots */}
+            {/* Time Dropdown */}
             {selectedDate && (
                 <div className="mb-6">
                     <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Select Time</p>
-                    <div className="grid grid-cols-2 gap-2">
-                        {uniqueTimes.map((time) => (
-                            <button key={time} onClick={() => setSelectedTime(time)}
-                                className={`px-4 py-3 rounded-xl border-2 flex items-center justify-center gap-2 ${
-                                    selectedTime === time ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700"
-                                }`}>
-                                <Clock className="w-4 h-4" />
-                                <span className="font-medium">{time}</span>
-                            </button>
-                        ))}
+                    <div className="relative">
+                        <select
+                            value={selectedTime || ""}
+                            onChange={(e) => setSelectedTime(e.target.value || null)}
+                            className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white appearance-none cursor-pointer focus:border-purple-500 focus:outline-none"
+                        >
+                            <option value="">Choose a time slot</option>
+                            {uniqueTimes.map((time) => (
+                                <option key={time} value={time}>
+                                    🕐 {time}
+                                </option>
+                            ))}
+                        </select>
+                        <Clock className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                     </div>
                 </div>
             )}
@@ -134,9 +135,8 @@ export default function LabSlotsDisplay({ data, onBookSlot }: LabSlotsDisplayPro
                     </div>
                 )}
                 <button onClick={() => canBook && onBookSlot(selectedDate!, selectedTime!, collectionType)} disabled={!canBook}
-                    className={`w-full py-4 rounded-xl font-bold text-lg ${
-                        canBook ? "bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-lg hover:scale-[1.02]" : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    }`}>
+                    className={`w-full py-4 rounded-xl font-bold text-lg ${canBook ? "bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-lg hover:scale-[1.02]" : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        }`}>
                     {canBook ? `Confirm Booking • ₹${data.cart.cart_total + (collectionType === "home_collection" ? 50 : 0)}` : "Select date and time"}
                 </button>
             </div>
